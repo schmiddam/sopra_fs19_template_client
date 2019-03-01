@@ -1,10 +1,10 @@
 import React from "react";
 import styled from "styled-components";
-import { BaseContainer } from "C:/Users/schmi/WebstormProjects/sopra-fs19-template-client/src/helpers/layout";
-import { getDomain } from "C:/Users/schmi/WebstormProjects/sopra-fs19-template-client/src/helpers/getDomain";
-import User from "C:/Users/schmi/WebstormProjects/sopra-fs19-template-client/src/components/shared/models/User";
+import { BaseContainer } from "../../helpers/layout";
+import { getDomain } from "../../helpers/getDomain";
+import User from "../shared/models/User";
 import { withRouter } from "react-router-dom";
-import { Button } from "C:/Users/schmi/WebstormProjects/sopra-fs19-template-client/src/views/design/Button";
+import { Button } from "../../views/design/Button";
 
 const FormContainer = styled.div`
   margin-top: 2em;
