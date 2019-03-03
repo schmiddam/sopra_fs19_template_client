@@ -75,7 +75,7 @@ class Login extends React.Component {
   constructor() {
     super();
     this.state = {
-      name: null,
+      password: null,
       username: null
     };
   }
@@ -84,6 +84,38 @@ class Login extends React.Component {
    * If the request is successful, a new user is returned to the front-end and its token is stored in the localStorage.
    */
   login() {
+    if (this.value.password === localStorage.getItem("password")) {
+      fetch(`${getDomain()}/users`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+      })
+      .then(response => response.json())
+      .then(returnedUser => {
+         const user = new User(returnedUser);
+            // store the token into the local storage
+         localStorage.setItem("token", user.token);
+            // user login successfully worked --> navigate to the route /game in the GameRouter
+         this.props.history.push(`/game`);
+      })
+      .catch(err => {
+         if (err.message.match(/Failed to fetch/)) {
+            alert("The server cannot be reached. Did you start it?");
+         } else {
+            alert(`Something went wrong during the login: ${err.message}`);
+         }
+      });
+    } else {
+      if (!this.state.username in localStorage) {
+        alert("Before Login, please register first.")
+      } else {
+        alert("Password is incorrect. Try again.")
+      }
+    }
+  }
+  
+  register(){
     fetch(`${getDomain()}/users`, {
       method: "POST",
       headers: {
@@ -91,25 +123,29 @@ class Login extends React.Component {
       },
       body: JSON.stringify({
         username: this.state.username,
-        name: this.state.name
+        password: this.state.password
       })
     })
-      .then(response => response.json())
-      .then(returnedUser => {
+     .then(response => response.json())
+        .then(returnedUser => {
         const user = new User(returnedUser);
-        // store the token into the local storage
+          // store the token and the date into the local storage
         localStorage.setItem("token", user.token);
-        // user login successfully worked --> navigate to the route /game in the GameRouter
+        localStorage.setItem("date", user.date);
+          // user register successfully worked --> navigate to the route /game in the GameRouter
         this.props.history.push(`/game`);
-      })
-      .catch(err => {
-        if (err.message.match(/Failed to fetch/)) {
-          alert("The server cannot be reached. Did you start it?");
-        } else {
-          alert(`Something went wrong during the login: ${err.message}`);
-        }
-      });
+        })
+        .catch(err => {
+          if (err.message.match(/Failed to fetch/)) {
+            alert("The server cannot be reached. Did you start it?");
+          }  else {
+            alert(`Something went wrong during the login: ${err.message}`);
+          }
+        });
+
+
   }
+  
 
   /**
    *  Every time the user enters something in the input field, the state gets updated.
@@ -143,16 +179,17 @@ class Login extends React.Component {
                 this.handleInputChange("username", e.target.value);
               }}
             />
-            <Label>Name</Label>
+            <Label>Password</Label>
             <InputField
               placeholder="Enter here.."
               onChange={e => {
-                this.handleInputChange("name", e.target.value);
+                this.handleInputChange("password", e.target.value);
               }}
             />
             <ButtonContainer>
+
               <Button
-                disabled={!this.state.username || !this.state.name}
+                disabled={!this.state.username || !this.state.password}
                 width="50%"
                 onClick={() => {
                   this.login();
@@ -160,6 +197,15 @@ class Login extends React.Component {
               >
                 Login
               </Button>
+            <Button
+                disabled={!this.state.username || !this.state.password}
+                width="50%"
+                onClick={() => {
+                  this.register();
+                }}
+            >
+              Register
+            </Button>
             </ButtonContainer>
           </Form>
         </FormContainer>
