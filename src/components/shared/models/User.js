@@ -6,6 +6,7 @@ class User {
     this.id = null;
     this.password = null;
     this.username = null;
+    this.birthday = null;
     this.token = null;
     this.status = null;
     this.date = null;
