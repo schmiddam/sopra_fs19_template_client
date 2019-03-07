@@ -32,7 +32,7 @@ class Profile extends React.Component {
         this.setState((state) => {
             return {edit: !state.edit}
         })
-    }
+    };
 
     componentDidMount() {
         fetch(`${getDomain()}/users/${localStorage.getItem("loggedInAsId")}`)
@@ -45,17 +45,16 @@ class Profile extends React.Component {
     }
 
     render() {
-        if (localStorage.getItem("token") === null ) {
+        if (localStorage.getItem("token") == null ) {
             return (
-                <h1> You must be login to see this page. </h1>
+                <h1> You must be logged in to see this page. </h1>
             )
         } else return (
             <Container>
                 <h2> Welcome to your Profile! </h2>
                 <p> Username: {this.state.user.username} </p>
-                //TODO: wird nicht zugewiesen
                 <p> Status: {this.state.user.status} </p>
-                <p> Creation Date: {this.state.user.creationDate} </p>
+                <p> Creation Date: {this.state.user.CreationDate} </p>
                 <p> Birthday: {this.state.user.birthday} </p>
                 <br />
                 <Button

@@ -78,7 +78,7 @@ class Registration extends React.Component {
             password: null,
             username: null,
             birthday: null,
-            userAlreadyRegistered: false,
+            registered: false,
             loginDenied: false
         };
         this.today = new Date();
@@ -88,55 +88,56 @@ class Registration extends React.Component {
      * HTTP POST request is sent to the backend.
      * If the request is successful, a new user is returned to the front-end and its token is stored in the localStorage.
      */
+//alert("Got to register()");
     register() {
-        //this.setState({userAlreadyRegistered: false});
-        //this.setState({loginDenied: false});
-        fetch(`${getDomain()}/users/`, {
-            // promise
+        fetch(`${getDomain()}/users`, { //try registering user
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                username: this.state.username,
+                birthday: this.state.birthday,
                 password: this.state.password,
-                birthday: this.state.birthday
+                username: this.state.username
             })
         })
-
-        .then((response) => {
-            // do something with res
-            if (response.status === 409) {
-                this.setState({userAlreadyRegistered: true});
+        .then(response => {
+            if(response.status === 409) {
                 console.log(`ERROR: Failed to register already existing user ${this.state.username} with status 409 CONFLICT`);
                 alert("This Username is already taken. Please try again with a different Username");
                 window.location.reload();
             } else {
                 console.log(`OK: Successfully registered user ${this.state.username} with:`);
-                this.props.history.push(`/login`);
+                this.setState({registered: true});
+                return response;
             }
         })
-        .then(response => {return response.json()})
-        .then(returnedUser => {
-            if (this.state.userAlreadyRegistered) {
-                console.log(`FOLLOW-UP: registered birthday = ${this.state.birthday} as ${returnedUser.birthday}`);
+        .then(response => response.json())
+        .then(returnedUser =>  {
+            if(this.state.registered) {
+                console.log(`INFO: registered birthday = ${this.state.birthday} as ${returnedUser.birthday}`);
             }
         })
         .catch(err => {
-            // catch the error
             if (err.message.match(/Failed to fetch/)) {
                 alert("The server cannot be reached. Did you start it?");
             } else {
-                alert(`Something went wrong during the registration: ${err.message}`);
+                alert(`Something went wrong during the login: ${err.message}`);
+                window.location.reload();
             }
         })
         .then(() => {
-            if (this.state.userAlreadyRegistered) {
+            if(this.state.registered) {
+                this.props.history.push('/login');
+            }
+        })
+        .then(() => {
+            if(this.state.registered) {
                 alert("Registration successful. Try logging in with your new user credentials");
-                this.props.history.push(`/login`)
             }
         })
     }
+
 
     /**
      *  Every time the user enters something in the input field, the state gets updated.

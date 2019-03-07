@@ -49,7 +49,7 @@ class AppRouter extends React.Component {
                     )}
                 />
                 <Route path="/edit" component={Edit}/>
-                <Route path="users/profile/:id" component={Profile}/>
+                <Route path="users/profile" component={Profile}/>
                 <Route path="/" exact render={() => <Redirect to={"/login"}/>}/>
             </div>
         </Switch>

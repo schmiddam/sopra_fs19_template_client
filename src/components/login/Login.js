@@ -89,97 +89,51 @@ class Login extends React.Component {
      */
 
     login() {
-        fetch(`${getDomain()}/users/username/`+this.state.username, {
+        fetch(`${getDomain()}/users/`+this.state.username, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
             },
-            /** body: JSON.stringify({
-        username: this.state.username,
-        password: this.state.password
-      }) */
+/*             // creates a json String out of an object or array
+             body: JSON.stringify({
+             username: this.state.username,
+             password: this.state.password
+            })
+*/
         })
-            .then(response => response.json())
-            .then(returnedUser => {
-                const user = new User(returnedUser);
-                if(!(user.username === null || user.username === undefined || user.password === null || user.password === undefined) && //existing user
-                    (user.username === this.state.username && user.password === this.state.password)) {//identical login credentials
-                    //alert("username and password identical");
-                    // store the token into the local storage
-                    localStorage.setItem("token", user.token);
-                    // user login successfully worked --> navigate to the route /game in the GameRouter
-                    this.props.history.push(`/game`);
-                } else {
-                    alert("Wrong Password. Try again"); //deliberately only informing about wrong password and neglecting possibly wrong/non-existent username for security reasons
-                }
-            })
-            .catch(err => {
-                if (err.message.match(/Failed to fetch/)) {
-                    alert("The server cannot be reached. Did you start it?");
-                } else {
-                    alert(`Something went wrong during the login: ${err.message}`);
-                }
-            });
-    }
+        .then(response => response.json())
+        .then(returnedUser => {
+            const user = new User(returnedUser);
+            if(user.username === this.state.username && user.password === this.state.password){ //identical login credentials
+            //alert("username and password identical");
+            // store the token into the local storage
+                localStorage.setItem("token", user.token);
+                // user login successfully worked --> navigate to the route /game in the GameRouter
+                this.props.history.push(`/game`);
 
-    /**
-    login() {
-        this.setState({userAlreadyRegistered: false});
-        this.setState({loginDenied: false});
-        // check if user is already registered
-        fetch(`${getDomain()}/users`)
-            .then(response => response.json())
-            //TODO: catch case when the user trying to log in does not exist yet.
+        } else {
+            alert("Wrong Password. Try again");
+                //deliberately only informing about wrong password and neglecting possibly wrong/non-existent username for security reasons
+        }
+    })
+    .catch(err => {
+        if (err.message.match(/Failed to fetch/)) {
+            alert("The server cannot be reached. Did you start it?");
+        } else {
+            alert(`Something went wrong during the login: ${err.message}`);
+        }
+    });
+}
 
-            .then(users => {
-                const n = users.filter(user => (user.username === this.state.username));
-                const p = n[0].password; //TODO: Something went wrong during the login: n[0] is undefined
-                const logged = new User(n[0]);
-                if (n.length === 1 && p === this.state.password) {
-                    // checks if password has length 1 and password p is equal to stored password
-                    // stores the token into the localStorage
-                    localStorage.setItem("token", logged.token);
-                    localStorage.setItem("loggedInAsId", logged.id);
-                    fetch(`${getDomain()}/users/${n[0].id}`, {
-                        method: "PUT",
-                        headers: {
-                            "Content-Type": 'application/json',
-                        },
-                        body: JSON.stringify({
-                            status: "ONLINE"
-                        })
-                    })
-                        .then(res => console.log(res))
-                        .then(() => {
-                        this.props.history.push(`/game`);
-                    });
-                } else {
-                    this.setState({
-                        loginDenied: true
-                    });
-                    console.log(this.state);
-                    console.log("Please register before login");
-                }
-            })
-            .catch (err => {
-                    if (err.message.match(/Failed to fetch/)) {
-                        alert("The server cannot be reached. Did you start it?");
-                    } else {
-                        alert(`Something went wrong during the login: ${err.message}`);
-                    }
-                });
+register() {
+    this.props.history.push(`/registration`);
+}
 
-    }
-     **/
-    register() {
-        this.props.history.push(`/registration`);
-    }
-
-  /**
-   *  Every time the user enters something in the input field, the state gets updated.
-   * @param key (the key of the state for identifying the field that needs to be updated)
-   * @param value (the value that gets assigned to the identified state key)
-   */
+/**
+*  Every time the user enters something in the input field, the state gets updated.
+* @param key (the key of the state for identifying the field that needs to be updated)
+* @param value (the value that gets assigned to the identified state key)
+*/
   handleInputChange(key, value) {
     // Example: if the key is username, this statement is the equivalent to the following one:
     // this.setState({'username': value});
