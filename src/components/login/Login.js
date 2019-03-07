@@ -78,47 +78,102 @@ class Login extends React.Component {
         this.state = {
             password: null,
             username: null,
-            birthday: null
+            birthday: null,
+            loginDenied: false,
+            userAlreadyRegistered: false
         };
     }
     /**
      * HTTP POST request is sent to the backend.
      * If the request is successful, a new user is returned to the front-end and its token is stored in the localStorage.
      */
+
     login() {
-        // check if username exist in localStorage yet
-        if (localStorage.getItem(this.state.username) === null) { //TODO: condition is always true
-            // username does not exist yet
-            alert("Before Login, please register first.");
-            // check if password fits to username -> if yes, login
-        } else {
-            fetch(`${getDomain()}/users`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-            })
-                .then(response => response.json())
-                .then(returnedUser => {
-                    const user = new User(returnedUser);
+        fetch(`${getDomain()}/users/username/`+this.state.username, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            /** body: JSON.stringify({
+        username: this.state.username,
+        password: this.state.password
+      }) */
+        })
+            .then(response => response.json())
+            .then(returnedUser => {
+                const user = new User(returnedUser);
+                if(!(user.username === null || user.username === undefined || user.password === null || user.password === undefined) && //existing user
+                    (user.username === this.state.username && user.password === this.state.password)) {//identical login credentials
+                    //alert("username and password identical");
                     // store the token into the local storage
                     localStorage.setItem("token", user.token);
                     // user login successfully worked --> navigate to the route /game in the GameRouter
                     this.props.history.push(`/game`);
-                })
-                .catch(err => {
+                } else {
+                    alert("Wrong Password. Try again"); //deliberately only informing about wrong password and neglecting possibly wrong/non-existent username for security reasons
+                }
+            })
+            .catch(err => {
+                if (err.message.match(/Failed to fetch/)) {
+                    alert("The server cannot be reached. Did you start it?");
+                } else {
+                    alert(`Something went wrong during the login: ${err.message}`);
+                }
+            });
+    }
+
+    /**
+    login() {
+        this.setState({userAlreadyRegistered: false});
+        this.setState({loginDenied: false});
+        // check if user is already registered
+        fetch(`${getDomain()}/users`)
+            .then(response => response.json())
+            //TODO: catch case when the user trying to log in does not exist yet.
+
+            .then(users => {
+                const n = users.filter(user => (user.username === this.state.username));
+                const p = n[0].password; //TODO: Something went wrong during the login: n[0] is undefined
+                const logged = new User(n[0]);
+                if (n.length === 1 && p === this.state.password) {
+                    // checks if password has length 1 and password p is equal to stored password
+                    // stores the token into the localStorage
+                    localStorage.setItem("token", logged.token);
+                    localStorage.setItem("loggedInAsId", logged.id);
+                    fetch(`${getDomain()}/users/${n[0].id}`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": 'application/json',
+                        },
+                        body: JSON.stringify({
+                            status: "ONLINE"
+                        })
+                    })
+                        .then(res => console.log(res))
+                        .then(() => {
+                        this.props.history.push(`/game`);
+                    });
+                } else {
+                    this.setState({
+                        loginDenied: true
+                    });
+                    console.log(this.state);
+                    console.log("Please register before login");
+                }
+            })
+            .catch (err => {
                     if (err.message.match(/Failed to fetch/)) {
                         alert("The server cannot be reached. Did you start it?");
                     } else {
                         alert(`Something went wrong during the login: ${err.message}`);
                     }
                 });
-        }
+
     }
-    register(){
-        this.props.history.push('/registration')
-        }
-  
+     **/
+    register() {
+        this.props.history.push(`/registration`);
+    }
 
   /**
    *  Every time the user enters something in the input field, the state gets updated.
@@ -154,6 +209,7 @@ class Login extends React.Component {
                       />
                       <Label>Password</Label>
                       <InputField
+                          type="password"
                           placeholder="Enter here.."
                           onChange={e => {
                               this.handleInputChange("password", e.target.value);

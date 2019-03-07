@@ -1,49 +1,23 @@
-//TODO: Design Profile Page .../game -> .../profile to show username, online status, creation date, birthday date
-// With edit button, user can edit his own username and birthday (mapping on id not on username)
-
 import React from "react";
 import styled from "styled-components";
 import { BaseContainer } from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
-import Player from "../../views/Player";
-import { Spinner } from "../../views/design/Spinner";
 import { Button } from "../../views/design/Button";
-import { withRouter } from "react-router-dom";
+import Edit from "../../components/profile/Edit";
 
 const Container = styled(BaseContainer)`
   color: white;
   text-align: center;
 `;
 
-const Users = styled.ul`
-  list-style: none;
-  padding-left: 0;
-`;
-
-const ButtonContainer = styled.div`
-  background: none;
-  border: none;
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-`;
-
-const PlayerContainer = styled.li`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`;
-
 class Profile extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
-            username: null,
-            status: null,
-            creationDate: null,
-            birthday: null
-        };
+            user: "",
+            loggedInUser: "",
+            edit: false
+        }
     }
 
     logout() {
@@ -54,58 +28,45 @@ class Profile extends React.Component {
 
     }
 
-    componentDidMount() {
-        fetch(`${getDomain()}/users`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
+    handleOnClick = () => {
+        this.setState((state) => {
+            return {edit: !state.edit}
         })
-            .then(response => response.json())
-            .then(async users => {
-                // delays continuous execution of an async operation for 0.8 seconds.
-                // This is just a fake async call, so that the spinner can be displayed
-                // feel free to remove it :)
-                await new Promise(resolve => setTimeout(resolve, 800));
+    }
 
-                this.setState({ users });
-            })
-            .catch(err => {
-                console.log(err);
-                alert("Something went wrong fetching the users: " + err);
-            });
+    componentDidMount() {
+        fetch(`${getDomain()}/users/${localStorage.getItem("loggedInAsId")}`)
+            .then(response => response.json())
+            .then(user => this.setState({loggedInUser: user.username}));
+
+        fetch(`${getDomain()}/users/${this.id}`)
+            .then(response => response.json())
+            .then(user => this.setState({user: user}))
     }
 
     render() {
-        return (
+        if (localStorage.getItem("token") === null ) {
+            return (
+                <h1> You must be login to see this page. </h1>
+            )
+        } else return (
             <Container>
-                <h2>Welcome to your Profile! </h2>
-                {!this.state.users ? (
-                    <Spinner />
-                ) : (
-                    <div>
-                        <Users>
-                            {this.state.users.map(user => {
-                                return (
-                                    <PlayerContainer key={user.id}>
-                                        <Player user={user} />
-                                    </PlayerContainer>
-                                );
-                            })}
-                        </Users>
-                        <Button
-                            width="100%"
-                            onClick={() => {
-                                this.logout();
-                            }}
-                        >
-                            Logout
-                        </Button>
-                    </div>
-                )}
+                <h2> Welcome to your Profile! </h2>
+                <p> Username: {this.state.user.username} </p>
+                //TODO: wird nicht zugewiesen
+                <p> Status: {this.state.user.status} </p>
+                <p> Creation Date: {this.state.user.creationDate} </p>
+                <p> Birthday: {this.state.user.birthday} </p>
+                <br />
+                <Button
+                    onClick={this.handleOnClick}>
+                    Edit Profile
+                </Button>
+                {this.state.edit ? <Edit id={this.id}/> : null}
+                <h5>Logged in as: {this.state.username} </h5>
             </Container>
-        );
+        )
     }
 }
 
-export default withRouter(Profile);
+export default Profile

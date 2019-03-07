@@ -9,7 +9,7 @@ class User {
     this.birthday = null;
     this.token = null;
     this.status = null;
-    this.date = null;
+    this.CreationDate = null;
     this.games = null;
     this.moves = null;
     Object.assign(this, data);

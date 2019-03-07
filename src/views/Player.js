@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import {Button} from "./design/Button";
+import Link from "react-router-dom/es/Link";
 
 const Container = styled.div`
   margin: 6px 0;
@@ -10,6 +10,12 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   border: 1px solid #ffffff26;
+`;
+
+const Username = styled.div`
+  font-weight: lighter;
+  margin-left: 5px;
+  margin-right: 5px;
 `;
 
 const Birthday = styled.div`
@@ -23,15 +29,13 @@ const Id = styled.div`
   font-weight: bold;
 `;
 
-const ButtonContainer = styled.div`
-  background: none;
-  border: none;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
+const LinkWord = styled(Link)`
+  color: beige;
+  text-decoration: none;
+  &:hover{
+  color: darkgrey;
+  }
 `;
-
 
 /**
  * This is an example of a Functional and stateless component (View) in React. Functional components are not classes and thus don't handle internal state changes.
@@ -43,19 +47,15 @@ const ButtonContainer = styled.div`
  */
 
 const Player = ({ user }) => {
-  return (
-    <Container>
-        <ButtonContainer>
-            <Button
-            width = "100%"
-            onClick ={() => {this.props.history.push("/profile")}}
-            >
-                {user.username}
-            </Button>
-        </ButtonContainer> <Birthday> Birthday: {user.birthday}</Birthday>
-      <Id>Id: {user.id}</Id>
-    </Container>
-  );
+    return (
+        <Container>
+            <LinkWord
+                to={`/profile/${user.id}`}> <Username> {user.username} </Username>
+            </LinkWord>
+            <Id>Id: {user.id}</Id>
+            <Birthday>{user.birthday}</Birthday>
+        </Container>
+    );
 };
 
 export default Player;

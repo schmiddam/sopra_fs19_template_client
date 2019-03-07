@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { BaseContainer } from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
-import User from "../shared/models/User";
+//import User from "../shared/models/User";
 import { withRouter } from "react-router-dom";
 import { Button } from "../../views/design/Button";
 
@@ -77,16 +77,22 @@ class Registration extends React.Component {
         this.state = {
             password: null,
             username: null,
-            birthday: null
+            birthday: null,
+            userAlreadyRegistered: false,
+            loginDenied: false
         };
+        this.today = new Date();
     }
+
     /**
      * HTTP POST request is sent to the backend.
      * If the request is successful, a new user is returned to the front-end and its token is stored in the localStorage.
      */
     register() {
-        // if username not exists in localStorage -> register
-        fetch(`${getDomain()}/users`, {
+        //this.setState({userAlreadyRegistered: false});
+        //this.setState({loginDenied: false});
+        fetch(`${getDomain()}/users/`, {
+            // promise
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -94,27 +100,44 @@ class Registration extends React.Component {
             body: JSON.stringify({
                 username: this.state.username,
                 password: this.state.password,
-                birthday: this.state.birthday //TODO: check if format is valid
+                birthday: this.state.birthday
             })
         })
-            .then(response => response.json())
-            .then(returnedUser => {
-                const user = new User(returnedUser);
-                // store the token and the date into the local storage
-                localStorage.setItem("token", user.token);
-                localStorage.setItem("date", user.date);
 
-                // user register successfully worked --> navigate to the route /game in the GameRouter
+        .then((response) => {
+            // do something with res
+            if (response.status === 409) {
+                this.setState({userAlreadyRegistered: true});
+                console.log(`ERROR: Failed to register already existing user ${this.state.username} with status 409 CONFLICT`);
+                alert("This Username is already taken. Please try again with a different Username");
+                window.location.reload();
+            } else {
+                console.log(`OK: Successfully registered user ${this.state.username} with:`);
                 this.props.history.push(`/login`);
-            })
-            .catch(err => {
-                if (err.message.match(/Failed to fetch/)) {
-                    alert("The server cannot be reached. Did you start it?");
-                } else {
-                    alert(`Something went wrong during the login: ${err.message}`);
-                }
-            });
+            }
+        })
+        .then(response => {return response.json()})
+        .then(returnedUser => {
+            if (this.state.userAlreadyRegistered) {
+                console.log(`FOLLOW-UP: registered birthday = ${this.state.birthday} as ${returnedUser.birthday}`);
+            }
+        })
+        .catch(err => {
+            // catch the error
+            if (err.message.match(/Failed to fetch/)) {
+                alert("The server cannot be reached. Did you start it?");
+            } else {
+                alert(`Something went wrong during the registration: ${err.message}`);
+            }
+        })
+        .then(() => {
+            if (this.state.userAlreadyRegistered) {
+                alert("Registration successful. Try logging in with your new user credentials");
+                this.props.history.push(`/login`)
+            }
+        })
     }
+
     /**
      *  Every time the user enters something in the input field, the state gets updated.
      * @param key (the key of the state for identifying the field that needs to be updated)
@@ -134,6 +157,8 @@ class Registration extends React.Component {
      * It will trigger an extra rendering, but it will happen before the browser updates the screen.
      */
     componentDidMount() {}
+
+
 
     render() {
         return (
@@ -155,16 +180,36 @@ class Registration extends React.Component {
                             }}
                         />
                         <Label>Birthday</Label>
-                        <InputField
-                            placeholder="Enter here: dd.mm.yyyy"
-                            onChange={e => {
-                                this.handleInputChange("birthday", e.target.value);
-                            }}
-                        />
+                        <form action="/action_page.php">
+                            <input
+                                type="date"
+                                name="birthday"
+                                min="1900-01-01"
+                                max="2015-01-01"
+                                onChange={e => {
+                                    this.handleInputChange("birthday", e.target.value);
+                                }}
+
+                                {...() => {
+                                    let dd = this.today.getDate();
+                                    let mm = this.today.getMonth();
+                                    let yyyy = this.today.getFullYear();
+                                    if (dd < 10) {
+                                        dd = '0' + dd;
+                                    }
+                                    if (mm < 10) {
+                                        mm = '0' + mm;
+                                    }
+                                    let todayStr = yyyy + '-' + mm + '-' + dd;
+                                    document.getElementById("date").setAttribute("max", todayStr);
+                                }}
+                            />
+                        </form>
+                        <p/> {/* newline */}
                         <Label>Press Register to go back to the Login page</Label>
                         <ButtonContainer>
                             <Button
-                                disabled={!this.state.username || !this.state.password}
+                                disabled={!this.state.username || !this.state.password || !this.state.birthday}
                                 width="100%"
                                 onClick={() => {
                                     this.register();

@@ -33,8 +33,24 @@ class Game extends React.Component {
   }
 
   logout() {
+    //Clear localstorage and update user status to OFFLINE.
     localStorage.removeItem("token");
-    this.props.history.push("/login");
+    const userId = localStorage.getItem("loggedInAsId");
+
+    fetch(`${getDomain()}/users/${userId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": 'application/json',
+      },
+      body: JSON.stringify({
+        status: "OFFLINE"
+      })
+    }).then(res =>
+    {
+      console.log(res);
+      this.props.history.push("/login");
+      localStorage.removeItem("loggedInAsId")
+    })
   }
 
   componentDidMount() {
@@ -72,8 +88,7 @@ class Game extends React.Component {
               {this.state.users.map(user => {
                 return (
                   <PlayerContainer key={user.id}>
-                    <Player user={user}
-                    onClick/>
+                    <Player user={user}/>
                   </PlayerContainer>
                 );
               })}
@@ -84,6 +99,7 @@ class Game extends React.Component {
                 this.logout();
               }}
             >
+              Logout
             </Button>
           </div>
         )}

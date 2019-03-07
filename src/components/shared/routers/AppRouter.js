@@ -4,7 +4,9 @@ import { GameGuard } from "../routeProtectors/GameGuard";
 import GameRouter from "./GameRouter";
 import { LoginGuard } from "../routeProtectors/LoginGuard";
 import Login from "../../login/Login";
-import Registration from "../../registration/Registration"
+import Profile from "../../profile/Profile";
+import Registration from "../../registration/Registration";
+import Edit from "../../profile/Edit";
 
 /**
  * Main router of your application.
@@ -17,37 +19,41 @@ import Registration from "../../registration/Registration"
  */
 class AppRouter extends React.Component {
   render() {
-    return (
-      <BrowserRouter>
+    return <BrowserRouter>
         <Switch>
-          <div>
-            <Route
-              path="/game"
-              render={() => (
-                <GameGuard>
-                  <GameRouter base={"/game"} />
-                </GameGuard>
-              )}
-            />
-            <Route
-              path="/login"
-              exact
-              render={() => (
-                <LoginGuard>
-                  <Login />
-                </LoginGuard>
-              )}
-            />
-            <Route
-                path="/registration"
-                exact
-                render={() => <Registration/>}
-            />
-            <Route path="/" exact render={() => <Redirect to={"/game"} />} />
-          </div>
+            <div>
+                <Route
+                    path="/game"
+                    render={() => (
+                        <GameGuard>
+                            <GameRouter base={"/game"}/>
+                        </GameGuard>
+                    )}
+                />
+                <Route
+                    path="/login"
+                    exact
+                    render={() => (
+                        <LoginGuard>
+                            <Login/>
+                        </LoginGuard>
+                    )}
+                />
+                <Route
+                    path="/registration"
+                    exact
+                    render={() => (
+                        <LoginGuard>
+                            <Registration />
+                        </LoginGuard>
+                    )}
+                />
+                <Route path="/edit" component={Edit}/>
+                <Route path="users/profile/:id" component={Profile}/>
+                <Route path="/" exact render={() => <Redirect to={"/login"}/>}/>
+            </div>
         </Switch>
-      </BrowserRouter>
-    );
+    </BrowserRouter>;
   }
 }
 /*
