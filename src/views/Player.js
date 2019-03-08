@@ -50,7 +50,9 @@ const Player = ({ user }) => {
     return (
         <Container>
             <LinkWord
-                to={`/profile/${user.id}`}> <Username> {user.username} </Username>
+                to={{pathname: `/Profile`, state: {reference: user}}}>
+
+                <Username> {user.username} </Username>
             </LinkWord>
             <Id>Id: {user.id}</Id>
             <Birthday>{user.birthday}</Birthday>

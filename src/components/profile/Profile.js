@@ -4,6 +4,7 @@ import { BaseContainer } from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
 import { Button } from "../../views/design/Button";
 import Edit from "../../components/profile/Edit";
+import {withRouter} from "react-router-dom";
 
 const Container = styled(BaseContainer)`
   color: white;
@@ -52,20 +53,20 @@ class Profile extends React.Component {
         } else return (
             <Container>
                 <h2> Welcome to your Profile! </h2>
-                <p> Username: {this.state.user.username} </p>
-                <p> Status: {this.state.user.status} </p>
-                <p> Creation Date: {this.state.user.CreationDate} </p>
-                <p> Birthday: {this.state.user.birthday} </p>
+                <p> Username: {this.props.location.state.reference.username} </p>
+                <p> Status: {this.props.location.state.reference.status} </p>
+                <p> Creation Date: {this.props.location.state.reference.CreationDate} </p>
+                <p> Birthday: {this.props.location.state.reference.birthday} </p>
                 <br />
                 <Button
                     onClick={this.handleOnClick}>
                     Edit Profile
                 </Button>
                 {this.state.edit ? <Edit id={this.id}/> : null}
-                <h5>Logged in as: {this.state.username} </h5>
+                <h5>Logged in as: {this.props.location.state.reference.username} </h5>
             </Container>
         )
     }
 }
 
-export default Profile
+export default withRouter(Profile);

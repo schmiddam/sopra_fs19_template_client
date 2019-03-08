@@ -89,32 +89,28 @@ class Login extends React.Component {
      */
 
     login() {
-        fetch(`${getDomain()}/users/`+this.state.username, {
-            method: "GET",
+        fetch(`${getDomain()}/logcheck`, {
+            method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-/*             // creates a json String out of an object or array
+             // creates a json String out of an object or array
              body: JSON.stringify({
              username: this.state.username,
              password: this.state.password
             })
-*/
+
         })
         .then(response => response.json())
         .then(returnedUser => {
-            const user = new User(returnedUser);
-            if(user.username === this.state.username && user.password === this.state.password){ //identical login credentials
-            //alert("username and password identical");
-            // store the token into the local storage
+            if (returnedUser.status === 409) {
+                window.alert("username or password wrong")
+            } else {
+                const user = new User(returnedUser);
                 localStorage.setItem("token", user.token);
-                // user login successfully worked --> navigate to the route /game in the GameRouter
+                localStorage.setItem("username", user.username);
                 this.props.history.push(`/game`);
-
-        } else {
-            alert("Wrong Password. Try again");
-                //deliberately only informing about wrong password and neglecting possibly wrong/non-existent username for security reasons
-        }
+            }
     })
     .catch(err => {
         if (err.message.match(/Failed to fetch/)) {

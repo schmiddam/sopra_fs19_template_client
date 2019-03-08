@@ -57,7 +57,7 @@ class Game extends React.Component {
     fetch(`${getDomain()}/users`, {
       method: "GET",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/"
       }
     })
       .then(response => response.json())
