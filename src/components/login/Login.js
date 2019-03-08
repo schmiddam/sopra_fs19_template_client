@@ -79,6 +79,7 @@ class Login extends React.Component {
             password: null,
             username: null,
             birthday: null,
+            creationDate: null,
             loginDenied: false,
             userAlreadyRegistered: false
         };
@@ -109,6 +110,8 @@ class Login extends React.Component {
                 const user = new User(returnedUser);
                 localStorage.setItem("token", user.token);
                 localStorage.setItem("username", user.username);
+                localStorage.setItem("loggedInUserId", user.id);
+                localStorage.setItem("creationDate", user.creationDate);
                 this.props.history.push(`/game`);
             }
     })

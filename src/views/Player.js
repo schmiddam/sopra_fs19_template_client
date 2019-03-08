@@ -13,9 +13,10 @@ const Container = styled.div`
 `;
 
 const Username = styled.div`
-  font-weight: lighter;
   margin-left: 5px;
   margin-right: 5px;
+  font-weight: bolder;
+  text-decoration: underline;
 `;
 
 const Birthday = styled.div`
@@ -26,7 +27,14 @@ const Birthday = styled.div`
 const Id = styled.div`
   margin-left: auto;
   margin-right: 10px;
-  font-weight: bold;
+  font-weight: lighter;
+`;
+
+const CreationDate = styled.div`
+  margin-left: auto;
+  margin-right: 10px;
+  font-weight: lighter;
+  color: aquamarine;
 `;
 
 const LinkWord = styled(Link)`
@@ -51,10 +59,14 @@ const Player = ({ user }) => {
         <Container>
             <LinkWord
                 to={{pathname: `/Profile`, state: {reference: user}}}>
-
-                <Username> {user.username} </Username>
+                <Username
+                    onClick={()=> {
+                        localStorage.setItem("visitedUserId", user.id);
+                    }}
+                > {user.username} </Username>
             </LinkWord>
             <Id>Id: {user.id}</Id>
+            <CreationDate> CreationDate: {user.creationDate}</CreationDate>
             <Birthday>{user.birthday}</Birthday>
         </Container>
     );
