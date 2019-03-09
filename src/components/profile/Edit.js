@@ -1,12 +1,40 @@
-import React, {Component} from "react"
+import React from "react";
 import styled from "styled-components";
 import {Button} from "../../views/design/Button";
 import {getDomain} from "../../helpers/getDomain";
-
+import {withRouter} from "react-router-dom";
+import {BaseContainer} from "../../helpers/layout";
 
 const FormContainer = styled.div`
-  margin-top: 25px;
-  margin-bottom: 25px;
+  margin-top: 2em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 300px;
+  justify-content: center;
+`;
+
+const Form = styled.div`
+  margin-inside: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 60%;
+  height: 550px;
+  font-size: 16px;
+  font-weight: 300;
+  padding-left: 37px;
+  padding-right: 37px;
+  border-radius: 5px;
+  background: linear-gradient(rgb(27, 124, 186), rgb(2, 46, 101));
+  transition: opacity 0.5s ease, transform 0.5s ease;
+`;
+
+const Label = styled.label`
+  color: white;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  text-transform: uppercase;
 `;
 
 const InputField = styled.input`
@@ -23,86 +51,118 @@ const InputField = styled.input`
   color: white;
 `;
 
-const Label = styled.label`
-  color: white;
-  margin-bottom: 10px;
-  text-transform: uppercase;
-`;
 
-class Edit extends Component{
-    constructor() {
-        super()
+class Edit extends React.Component{
+    constructor(props) {
+        super(props);
         this.state = {
-            username: null,
-            birthday: null
-        }
+            user: "",
+            username: "",
+            birthday: "",
+            id: null,
+            isProfileOwner: false,
+            profileEditable: false
+        };
     }
 
     handleInputChange(key, value) {
         this.setState({ [key]: value });
     }
 
-    handleOnClickUsername = () => {
-        fetch(`${getDomain()}/users/${this.props.id}`, {
+    saveChanges(){
+        fetch(`${getDomain()}/users/${localStorage.getItem("visitedUserId")}`, {
             method: "PUT",
             headers: {
-                "Content-Type": 'application/json',
+                "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                username: this.state.username
-            })
-        }).then(res => console.log(res)).then(() =>
-        {
-            window.location.reload()
-        });
-    };
-
-    handleOnClickBirthday = () => {
-        fetch(`${getDomain()}/users/${this.props.id}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": 'application/json',
-            },
-            body: JSON.stringify({
+                username: this.state.username,
                 birthday: this.state.birthday
             })
-        }).then(res => console.log(res)).then(() =>
-        {
-            window.location.reload()
-        });
-    };
+        })
+            .then(response => response.json())
+            .then(res => {
+                if(res.status ===404){
+                    window.alert("User Id (und damit der User) existiert nicht!");
+                }else{
+                    localStorage.setItem("loggedInAs", res.username);
+                    this.props.history.push(`/Profile`);
+                }
+            })
+            .catch(err => {
+                alert(`Something went wrong during the login: ${err.message}`);
+            });
+    }
+
+    cancel() {
+        this.props.history.push(`/Profile`);
+    }
+
+    componentDidMount() {
+
+    }
+
 
     render() {
-        if (localStorage.getItem("loggedInAsId") === this.props.id){
             return(
-                <FormContainer>
-                    <Label> Username </Label>
-                    <InputField
-                        placeholder="Enter here.."
-                        onChange={e => {
-                            this.handleInputChange("username", e.target.value);
-                        }}
-                    />
-                    <Button onClick={this.handleOnClickUsername} disabled={!this.state.username}> Save </Button>
+                <BaseContainer>
+                    <FormContainer>
+                        <Form>
+                            <div>
+                                <Label> Username </Label>
+                            </div>
+                            <InputField
+                            placeholder="Enter here..."
+                            onChange={e => {
+                                this.handleInputChange("username", e.target.value);
+                            }}
+                            />
+                            <div>
+                                <Label> Birthday </Label>
+                            </div>
+                            <form action="/action_page.php">
+                                <input
+                                    type="date"
+                                    name="birthday"
+                                    min="1900-01-01"
+                                    max="2019-03-13"
+                                    onChange={e => {
+                                        this.handleInputChange("birthday", e.target.value);
+                                    }}
 
-                    <Label> Birthday </Label>
-                    <InputField
-                        placeholder="Enter here.."
-                        onChange={e => {
-                            this.handleInputChange("birthday", e.target.value);
-                        }}
-                    />
-                    <Button onClick={this.handleOnClickBirthday} disabled={!this.state.birthday}> Save </Button>
-                </FormContainer>
+                                    {...() => {
+                                        let dd = this.today.getDate();
+                                        let mm = this.today.getMonth();
+                                        let yyyy = this.today.getFullYear();
+                                        if (dd < 10) {
+                                            dd = '0' + dd;
+                                        }
+                                        if (mm < 10) {
+                                            mm = '0' + mm;
+                                        }
+                                        let todayStr = dd + '.' + mm + '.' + yyyy;
+                                        document.getElementById("date").setAttribute("max", todayStr);
+                                    }}
+                                />
+                            </form>
+                            <Button
+                                onClick={this.saveChanges(this.state.user)}
+                                disabled={!this.state.birthday}
+                                width="50%"
+                            >
+                                Save
+                            </Button>
+                            <Button
+                                onClick={this.cancel}
+                                width="50%"
+                            >
+                                Cancel
+                            </Button>
+                        </Form>
+                    </FormContainer>
+                </BaseContainer>
             )
-        }
-        else{
-            return(
-                <h2>You can only edit your own profile</h2>
-            )
-        }
     }
 }
 
-
-export default Edit
+export default withRouter(Edit)

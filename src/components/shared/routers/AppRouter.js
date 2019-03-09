@@ -58,8 +58,15 @@ class AppRouter extends React.Component {
                         </ProfileGuard>
                     )}
                 />
-                <Route path="/edit" component={Edit}/>
-                <Route path="users/profile" component={Profile}/>
+                <Route
+                    path="/profile/Edit"
+                    exact
+                    render={() => (
+                        <ProfileGuard>
+                            <Edit />
+                        </ProfileGuard>
+                    )}
+                />
                 <Route path="/" exact render={() => <Redirect to={"/login"}/>}/>
             </div>
         </Switch>

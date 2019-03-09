@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { BaseContainer } from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
 import { Button } from "../../views/design/Button";
-import Edit from "../../components/profile/Edit";
+//import Edit from "../../components/profile/Edit";
 import {withRouter} from "react-router-dom";
 
 const Container = styled.div`
@@ -85,6 +85,7 @@ class Profile extends React.Component {
             user: "",
             id: null,
             loggedInUser: "",
+            status: null,
             edit: false,
             isProfileOwner: false
         };
@@ -99,19 +100,12 @@ class Profile extends React.Component {
         this.props.history.push("/login");
     }
     redirectEdit(){
-        this.props.history.push("/profile/Edit");
-        this.setState((state) => {
-            return {edit: !state.edit}
-        })
-    }
-
-    handleOnClick = () => {
-
+        this.props.history.push(`/profile/Edit`);
     }
 
     componentDidMount() {
 
-        fetch(`${getDomain()}/users/${this.id}`)
+        fetch(`${getDomain()}/users/${localStorage.getItem("visitedUserId")}`)
             .then(response => response.json())
             .then((user) => {
                 this.setState({user: user});
@@ -125,9 +119,9 @@ class Profile extends React.Component {
             })
 
     }
-
     render() {
-        //this.state.users.map(user => {
+
+        //this.state.users.map((user) => {
             return (
                 <BaseContainer>
                     <FormContainer>
@@ -188,4 +182,4 @@ class Profile extends React.Component {
     }
 }
 
-export default withRouter(Profile);
+export default withRouter(Profile)
