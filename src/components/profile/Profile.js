@@ -99,8 +99,11 @@ class Profile extends React.Component {
         localStorage.removeItem("token");
         this.props.history.push("/login");
     }
-    redirectEdit(){
-        this.props.history.push(`/profile/Edit`);
+    redirectEdit(user){
+        this.props.history.push({
+            pathname: `/edit`,
+            state: {username: user}
+        });
     }
 
     componentDidMount() {
@@ -120,7 +123,7 @@ class Profile extends React.Component {
 
     }
     render() {
-
+        let user = this.props.location.state.username;
         //this.state.users.map((user) => {
             return (
                 <BaseContainer>
@@ -165,7 +168,7 @@ class Profile extends React.Component {
                                         <Button
                                             width="50%"
                                             onClick={() => {
-                                                return this.redirectEdit();
+                                                return this.redirectEdit(user);
                                             }}
                                         >
                                             Edit Profile

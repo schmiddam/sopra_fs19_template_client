@@ -59,7 +59,7 @@ class AppRouter extends React.Component {
                     )}
                 />
                 <Route
-                    path="/profile/Edit"
+                    path="/edit"
                     exact
                     render={() => (
                         <ProfileGuard>

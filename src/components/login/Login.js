@@ -102,19 +102,27 @@ class Login extends React.Component {
             })
 
         })
-        .then(response => response.json())
-        .then(returnedUser => {
-            if (returnedUser.status === 409) {
-                window.alert("username or password wrong")
+        .then((response) => {
+
+            if (response.status === 403){
+                this.setState({message: "Wrong password"})
+            } else if (response.status === 404){
+                this.setState({message: "User does not exist, please register first"})
+            } else if (response.status === 409) {
+                this.setState({message: "Username or password wrong"})
             } else {
-                const user = new User(returnedUser);
-                localStorage.setItem("token", user.token);
-                localStorage.setItem("username", user.username);
-                localStorage.setItem("loggedInUserId", user.id);
-                localStorage.setItem("creationDate", user.creationDate);
-                this.props.history.push(`/game`);
+                response.json().then(returnedUser => {
+                    const user = new User(returnedUser);
+                    localStorage.setItem("token", user.token);
+                    localStorage.setItem("username", user.username);
+                    localStorage.setItem("loggedInUserId", user.id);
+                    localStorage.setItem("creationDate", user.creationDate);
+                    this.props.history.push(`/game`);
+                })
             }
-    })
+
+        })
+
     .catch(err => {
         if (err.message.match(/Failed to fetch/)) {
             alert("The server cannot be reached. Did you start it?");

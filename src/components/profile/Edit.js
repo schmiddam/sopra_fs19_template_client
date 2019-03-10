@@ -69,8 +69,8 @@ class Edit extends React.Component{
         this.setState({ [key]: value });
     }
 
-    saveChanges(){
-        fetch(`${getDomain()}/users/${localStorage.getItem("visitedUserId")}`, {
+    saveChanges(user){
+        fetch(`${getDomain()}/users/${this.props.id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
@@ -85,8 +85,11 @@ class Edit extends React.Component{
                 if(res.status ===404){
                     window.alert("User Id (und damit der User) existiert nicht!");
                 }else{
-                    localStorage.setItem("loggedInAs", res.username);
-                    this.props.history.push(`/Profile`);
+                    //localStorage.setItem("loggedInAs", res.username);
+                    this.props.history.push({
+                        pathname: `/profile`,
+                        state: {username: user}
+                    });
                 }
             })
             .catch(err => {
@@ -95,7 +98,9 @@ class Edit extends React.Component{
     }
 
     cancel() {
-        this.props.history.push(`/Profile`);
+        this.props.history.push({
+            pathname: `/profile`
+        });
     }
 
     componentDidMount() {
@@ -104,7 +109,8 @@ class Edit extends React.Component{
 
 
     render() {
-            return(
+        let user = this.props.location.state.username;
+        return(
                 <BaseContainer>
                     <FormContainer>
                         <Form>
@@ -146,7 +152,7 @@ class Edit extends React.Component{
                                 />
                             </form>
                             <Button
-                                onClick={this.saveChanges(this.state.user)}
+                                onClick={this.saveChanges(user)}
                                 disabled={!this.state.birthday}
                                 width="50%"
                             >

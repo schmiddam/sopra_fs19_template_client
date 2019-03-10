@@ -58,7 +58,7 @@ const Player = ({ user }) => {
     return (
         <Container>
             <LinkWord
-                to={{pathname: `/Profile`, state: {reference: user}}}>
+                to={{pathname: `/profile`, state: {reference: user}}}>
                 <Username
                     onClick={()=> {
                         localStorage.setItem("visitedUserId", user.id);
