@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { BaseContainer } from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
 import { Button } from "../../views/design/Button";
-//import Edit from "../../components/profile/Edit";
 import {withRouter} from "react-router-dom";
 
 const Container = styled.div`
@@ -14,6 +13,7 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   border: 1px solid #ffffff26;
+  background: beige;
 `;
 
 const FormContainer = styled.div`
@@ -37,7 +37,7 @@ const Form = styled.div`
   padding-left: 37px;
   padding-right: 37px;
   border-radius: 5px;
-  background: linear-gradient(rgb(27, 124, 186), rgb(2, 46, 101));
+  background: linear-gradient(lawngreen, darkred);
   transition: opacity 0.5s ease, transform 0.5s ease;
 `;
 
@@ -56,25 +56,25 @@ const Label = styled.label`
 
 const Birthday = styled.div`
   font-weight: bold;
-  color: #06c4ff;
+  color: black;
   margin-bottom: 10px;
 `;
 
 const CreationDate = styled.div`
   font-weight: bold;
-  color: #06c4ff;
+  color: black;
   margin-bottom: 10px;
 `;
 
 const Username = styled.div`
   font-weight: bold;
-  color: #06c4ff;
+  color: black;
   margin-bottom: 10px;
 `;
 
 const Userstatus = styled.div`
   font-weight: bold;
-  color: #06c4ff;
+  color: black;
   margin-bottom: 10px;
 `;
 
@@ -101,14 +101,14 @@ class Profile extends React.Component {
     }
     redirectEdit(user){
         this.props.history.push({
-            pathname: `/edit`,
-            state: {username: user}
+            pathname: `/Edit`,
+            state: {user: user} //orange user gets white name for edit page
         });
     }
 
     componentDidMount() {
 
-        fetch(`${getDomain()}/users/${localStorage.getItem("visitedUserId")}`)
+        fetch(`${getDomain()}/users/${localStorage.getItem("id")}`)
             .then(response => response.json())
             .then((user) => {
                 this.setState({user: user});
@@ -123,65 +123,63 @@ class Profile extends React.Component {
 
     }
     render() {
-        let user = this.props.location.state.username;
+        let user = this.props.location.state.reference;
         //this.state.users.map((user) => {
             return (
                 <BaseContainer>
                     <FormContainer>
                         <Form>
-                            <h2> Welcome to your Profile! </h2>
-                            <Label>Username</Label>
-                            <Container>
-                                <div>
-                                    <Username>{this.props.location.state.reference.username}</Username>
-                                </div>
-                            </Container>
-                            <Label>Birthday</Label>
-                            <Container>
-                                <div>
-                                    <Birthday>{this.props.location.state.reference.birthday}</Birthday>
-                                </div>
-                            </Container>
-                            <Label>CreationDate</Label>
-                            <Container>
-                                <div>
-                                    <CreationDate>{this.props.location.state.reference.creationDate}</CreationDate>
-                                </div>
-                            </Container>
-                            <Label>Status</Label>
-                            <Container>
-                                <div>
-                                    <Userstatus>{this.props.location.state.reference.status}</Userstatus>
-                                </div>
-                            </Container>
+                        <Label>Username</Label>
+                        <Container>
                             <div>
-                                <ButtonContainer>
+                                <Username>{this.props.location.state.reference.username}</Username>
+                            </div>
+                        </Container>
+                        <Label>Birthday</Label>
+                        <Container>
+                            <div>
+                                <Birthday>{this.props.location.state.reference.birthday}</Birthday>
+                            </div>
+                        </Container>
+                        <Label>CreationDate</Label>
+                        <Container>
+                            <div>
+                                <CreationDate>{localStorage.getItem("creationDate")}</CreationDate>
+                            </div>
+                        </Container>
+                        <Label>Status</Label>
+                        <Container>
+                            <div>
+                                <Userstatus>{this.props.location.state.reference.status}</Userstatus>
+                            </div>
+                        </Container>
+                        <div>
+                            <ButtonContainer>
+                                <Button
+                                    width="50%"
+                                    onClick={() => {
+                                        return this.redirectDashboard();
+                                    }}
+                                >
+                                    Back to Dashboard
+                                </Button>
+                                {this.state.isProfileOwner ?
                                     <Button
                                         width="50%"
                                         onClick={() => {
-                                            return this.redirectDashboard();
+                                            return this.redirectEdit(user);
                                         }}
                                     >
-                                        Back to Dashboard
-                                    </Button>
-                                    {this.state.isProfileOwner ?
-                                        <Button
-                                            width="50%"
-                                            onClick={() => {
-                                                return this.redirectEdit(user);
-                                            }}
-                                        >
-                                            Edit Profile
-                                        </Button> : ""
-                                    }
-                                </ButtonContainer>
-                            </div>
-                        </Form>
-                    </FormContainer>
-                    <h5>Logged in as: {this.state.loggedInUser} </h5>
-                </BaseContainer>
-            );
-        //});
+                                        Edit Profile
+                                    </Button> : ""
+                                }
+                            </ButtonContainer>
+                        </div>
+                    </Form>
+                </FormContainer>
+                <h5>Logged in as: {this.state.loggedInUser} </h5>
+            </BaseContainer>
+        );
     }
 }
 

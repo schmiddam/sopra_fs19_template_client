@@ -54,7 +54,7 @@ class AppRouter extends React.Component {
                     exact
                     render={() => (
                         <ProfileGuard>
-                            <Profile />
+                            <Profile/>
                         </ProfileGuard>
                     )}
                 />
@@ -63,7 +63,7 @@ class AppRouter extends React.Component {
                     exact
                     render={() => (
                         <ProfileGuard>
-                            <Edit />
+                            <Edit/>
                         </ProfileGuard>
                     )}
                 />

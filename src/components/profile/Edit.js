@@ -26,7 +26,7 @@ const Form = styled.div`
   padding-left: 37px;
   padding-right: 37px;
   border-radius: 5px;
-  background: linear-gradient(rgb(27, 124, 186), rgb(2, 46, 101));
+  background: linear-gradient(lawngreen, darkred);
   transition: opacity 0.5s ease, transform 0.5s ease;
 `;
 
@@ -70,7 +70,7 @@ class Edit extends React.Component{
     }
 
     saveChanges(user){
-        fetch(`${getDomain()}/users/${this.props.id}`, {
+        fetch(`${getDomain()}/users/${user.id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
@@ -80,20 +80,21 @@ class Edit extends React.Component{
                 birthday: this.state.birthday
             })
         })
-            .then(response => response.json())
             .then(res => {
                 if(res.status ===404){
                     window.alert("User Id (und damit der User) existiert nicht!");
                 }else{
                     //localStorage.setItem("loggedInAs", res.username);
+                    user.username = this.state.username;
+                    user.birthday = this.state.birthday;
                     this.props.history.push({
                         pathname: `/profile`,
-                        state: {username: user}
+                        state: {reference: user}
                     });
                 }
             })
             .catch(err => {
-                alert(`Something went wrong during the login: ${err.message}`);
+                alert(`Something went wrong during saving: ${err.message}`);
             });
     }
 
@@ -109,7 +110,7 @@ class Edit extends React.Component{
 
 
     render() {
-        let user = this.props.location.state.username;
+        let user = this.props.location.state.user;
         return(
                 <BaseContainer>
                     <FormContainer>
@@ -152,7 +153,9 @@ class Edit extends React.Component{
                                 />
                             </form>
                             <Button
-                                onClick={this.saveChanges(user)}
+                                onClick={() => {
+                                    this.saveChanges(user);
+                                }}
                                 disabled={!this.state.birthday}
                                 width="50%"
                             >

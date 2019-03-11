@@ -27,7 +27,7 @@ const Form = styled.div`
   padding-left: 37px;
   padding-right: 37px;
   border-radius: 5px;
-  background: linear-gradient(rgb(27, 124, 186), rgb(2, 46, 101));
+  background: linear-gradient(lawngreen, darkred);
   transition: opacity 0.5s ease, transform 0.5s ease;
 `;
 
@@ -111,16 +111,16 @@ class Login extends React.Component {
             } else if (response.status === 409) {
                 this.setState({message: "Username or password wrong"})
             } else {
-                response.json().then(returnedUser => {
-                    const user = new User(returnedUser);
-                    localStorage.setItem("token", user.token);
-                    localStorage.setItem("username", user.username);
-                    localStorage.setItem("loggedInUserId", user.id);
-                    localStorage.setItem("creationDate", user.creationDate);
-                    this.props.history.push(`/game`);
-                })
+                response.json()
+                   .then(returnedUser => {
+                        const user = new User(returnedUser);
+                        localStorage.setItem("token", user.token);
+                        localStorage.setItem("username", user.username);
+                        localStorage.setItem("loggedInUserId", user.id);
+                        localStorage.setItem("creationDate", user.creationDate);
+                        this.props.history.push(`/game`);
+                    })
             }
-
         })
 
     .catch(err => {
