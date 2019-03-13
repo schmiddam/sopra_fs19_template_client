@@ -66,8 +66,8 @@ const Player = ({ user }) => {
                 > {user.username} </Username>
             </LinkWord>
             <Id>Id: {user.id}</Id>
-            <CreationDate> CreationDate: {user.creationDate}</CreationDate>
-            <Birthday>{user.birthday}</Birthday>
+            <CreationDate>CreationDate: {user.creationDate}</CreationDate>
+            <Birthday>BD: {user.birthday}</Birthday>
         </Container>
     );
 };

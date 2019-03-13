@@ -107,12 +107,13 @@ class Profile extends React.Component {
     }
 
     componentDidMount() {
-
-        fetch(`${getDomain()}/users/${localStorage.getItem("id")}`)
+        // GET
+        fetch(`${getDomain()}/users/${localStorage.getItem("visitedUserId")}`)
             .then(response => response.json())
             .then((user) => {
                 this.setState({user: user});
                 this.setState({loggedInUser: localStorage.getItem("username")});
+                this.setState({creationDate: localStorage.getItem("creationDate")});
                 this.setState({id: user.id});
                 this.setState({isProfileOwner: localStorage.getItem("visitedUserId") === localStorage.getItem("loggedInUserId")});
                 console.log(`logged in as ${this.state.loggedInUser}`)
@@ -124,7 +125,6 @@ class Profile extends React.Component {
     }
     render() {
         let user = this.props.location.state.reference;
-        //this.state.users.map((user) => {
             return (
                 <BaseContainer>
                     <FormContainer>
@@ -144,7 +144,7 @@ class Profile extends React.Component {
                         <Label>CreationDate</Label>
                         <Container>
                             <div>
-                                <CreationDate>{localStorage.getItem("creationDate")}</CreationDate>
+                                <CreationDate>{this.props.location.state.reference.creationDate}</CreationDate>
                             </div>
                         </Container>
                         <Label>Status</Label>

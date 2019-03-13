@@ -111,6 +111,7 @@ class Login extends React.Component {
             } else if (response.status === 409) {
                 this.setState({message: "Username or password wrong"})
             } else {
+
                 response.json()
                    .then(returnedUser => {
                         const user = new User(returnedUser);

@@ -78,7 +78,6 @@ class Game extends React.Component {
   }
 
   render() {
-    //let user = this.props.location.state.reference;
     return (
       <Container>
         <h2>Happy Coding! </h2>
@@ -89,6 +88,7 @@ class Game extends React.Component {
           <div>
             <Users>
               {this.state.users.map(user => {
+                //console.log(`user has cdate ${user.creationDate}`);
                 return (
                   <PlayerContainer key={user.id}>
                     <Player user={user}/>

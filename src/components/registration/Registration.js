@@ -102,27 +102,22 @@ class Registration extends React.Component {
             })
         })
         .then(response => {
-            if(response.status === 409) {
-                console.log(`ERROR: Failed to register already existing user ${this.state.username} with status 409 CONFLICT`);
-                alert("This Username is already taken. Please try again with a different Username");
+            if(!(response.status === 201)) {
+                console.log(`ERROR: Failed to register already existing user ${this.state.username} with CONFLICT`);
+                alert("Username already exist or other conflict.");
                 window.location.reload();
             } else {
-                console.log(`OK: Successfully registered user ${this.state.username} with:`);
+                //console.log(`OK: Successfully registered user ${this.state.username} with:`);
                 this.setState({registered: true});
                 return response;
             }
         })
-        .then(response => response.json())
-        .then(returnedUser =>  {
-            if(this.state.registered) {
-                console.log(`INFO: registered birthday = ${this.state.birthday} as ${returnedUser.birthday}`);
-            }
-        })
+
         .catch(err => {
             if (err.message.match(/Failed to fetch/)) {
                 alert("The server cannot be reached. Did you start it?");
             } else {
-                alert(`Something went wrong during the login: ${err.message}`);
+                alert(`Something went wrong during the registration: ${err.message}`);
                 window.location.reload();
             }
         })

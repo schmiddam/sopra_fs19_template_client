@@ -98,9 +98,10 @@ class Edit extends React.Component{
             });
     }
 
-    cancel() {
+    cancel(user) {
         this.props.history.push({
-            pathname: `/profile`
+            pathname: `/profile`,
+            state: {reference: user}
         });
     }
 
@@ -156,13 +157,15 @@ class Edit extends React.Component{
                                 onClick={() => {
                                     this.saveChanges(user);
                                 }}
-                                disabled={!this.state.birthday}
+                                disabled={!this.state.birthday || !this.state.username}
                                 width="50%"
                             >
                                 Save
                             </Button>
                             <Button
-                                onClick={this.cancel}
+                                onClick={() => {
+                                    this.cancel(user);
+                                }}
                                 width="50%"
                             >
                                 Cancel
